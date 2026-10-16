@@ -21,9 +21,18 @@ export function getBackendServerUrl(): string {
     return ''; // 空字符串表示使用相对路径，通过代理访问
   }
 
-  // 生产模式：使用配置的后端URL
+  // 生产模式：优先使用构建时配置的后端地址
   if (typeof BACKEND_BASE_URL === 'string') {
-    return normalizeBackendUrl(BACKEND_BASE_URL);
+    const configured = normalizeBackendUrl(BACKEND_BASE_URL);
+    if (configured) {
+      return configured;
+    }
+  }
+
+  // 自建部署：没有配置后端地址时默认同源
+  // （前端与后端同域，/api/* 由反向代理转发；换域名不需要重新打包）
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return normalizeBackendUrl(window.location.origin);
   }
   return '';
 }
