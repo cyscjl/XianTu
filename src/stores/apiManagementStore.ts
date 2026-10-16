@@ -8,7 +8,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { API_PROVIDER_PRESETS, type APIProvider, type ThinkingLevel } from '@/services/aiService';
-import { BUILTIN_API_KEY, builtinClientId, builtinServerIdFromClient, fetchBuiltinApiList, isBuiltinClientId, type BuiltinApiStatus } from '@/services/builtinApi';
+import { BUILTIN_API_KEY, builtinClientId, builtinServerIdFromClient, isBuiltinClientId, type BuiltinApiStatus } from '@/services/builtinApi';
 
 export interface APIConfig {
   id: string;
@@ -372,19 +372,9 @@ export const useAPIManagementStore = defineStore('apiManagement', () => {
     saveToStorage();
   };
 
-  /** 拉公益模型名单和余额。失败时保留上次的名单。 */
-  let builtinSyncing: Promise<void> | null = null;
+  /** 自建部署已移除「公益 API」模块：不再向后端拉取公益模型名单与余额。 */
   const syncBuiltinApi = async () => {
-    if (builtinSyncing) return builtinSyncing;
-    builtinSyncing = (async () => {
-      const list = await fetchBuiltinApiList();
-      if (!list) return;
-      applyBuiltinList(list.items);
-      builtinBalance.value = localStorage.getItem('access_token') ? list.balance : null;
-    })().finally(() => {
-      builtinSyncing = null;
-    });
-    return builtinSyncing;
+    return;
   };
 
   const setBuiltinBalance = (value: number | null) => {

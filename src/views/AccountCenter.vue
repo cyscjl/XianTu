@@ -48,17 +48,6 @@
             </div>
           </details>
 
-          <details class="section" open>
-            <summary class="section-title">
-              <ChevronRight :size="15" class="chevron" />
-              <span>公益额度</span>
-            </summary>
-            <div class="section-body quota-body">
-              <WalletCard :loginable="false" />
-              <button type="button" class="cc-btn small board-btn" @click="showBoard = true"><Trophy :size="14" /><span>查看额度排行</span></button>
-              <LeaderboardModal v-if="showBoard" @close="showBoard = false" />
-            </div>
-          </details>
         </div>
       </template>
 
@@ -83,9 +72,6 @@ import VideoBackground from '@/components/common/VideoBackground.vue';
 import { ArrowLeft, ChevronRight, Loader2, Lock, LogOut, Trophy } from 'lucide-vue-next';
 import { request } from '@/services/request';
 import { isBackendConfigured } from '@/services/backendConfig';
-import { usePublicApi } from '@/composables/usePublicApi';
-import WalletCard from '@/components/publicApi/WalletCard.vue';
-import LeaderboardModal from '@/components/publicApi/LeaderboardModal.vue';
 import { toast } from '@/utils/toast';
 
 type UserProfile = {
@@ -98,8 +84,6 @@ const router = useRouter();
 const backendReady = ref(isBackendConfigured());
 const loading = ref(false);
 const profile = ref<UserProfile | null>(null);
-const publicApi = usePublicApi();
-const showBoard = ref(false);
 
 const loggedIn = computed(() => !!profile.value);
 
@@ -150,7 +134,6 @@ onMounted(async () => {
   loading.value = true;
   try {
     profile.value = await request.get<UserProfile>('/api/v1/auth/me');
-    await publicApi.refresh();
   } catch (_e) {
     profile.value = null;
     router.push('/login');

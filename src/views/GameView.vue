@@ -214,12 +214,12 @@ const panelRoutes = new Set([
   'Cultivation', 'Techniques', 'ThousandDao', 'Settings', 'Save', 'WorldMap',
   'Events', 'Crafting', 'Sect', 'SectOverview', 'SectMembers', 'SectManagement', 'SectLibrary', 'SectTasks', 'SectContribution', 'GameVariables',
   'Npcs',
-  'Prompts', 'APIManagement', 'GameAccount', 'BackendAdminPanel'
+  'Prompts', 'APIManagement', 'BackendAdminPanel'
 ]);
 
 // 不需要角色数据就能访问的面板（设置类）
 const noDataRequiredRoutes = new Set([
-  'Settings', 'Prompts', 'APIManagement', 'GameAccount', 'BackendAdminPanel'
+  'Settings', 'Prompts', 'APIManagement', 'BackendAdminPanel'
 ]);
 
 // 右侧相关面板（应该影响右侧收缩按钮）
@@ -256,7 +256,6 @@ const panelTitles: Record<string, { title: string; desc?: string; icon: IconComp
   GameVariables: { title: '游戏变量', desc: '查看游戏数据', icon: Database },
   Prompts: { title: '提示词管理', desc: '自定义提示词', icon: FileText },
   APIManagement: { title: 'API管理', desc: '多API配置', icon: Plug },
-  GameAccount: { title: '道友账户', desc: '签到领取公益额度', icon: BadgeCheck },
   BackendAdminPanel: { title: '仙官后台', icon: Shield }
 };
 

@@ -59,7 +59,6 @@ import PromptsPage from '../views/game/PromptsPage.vue';
 import PromptManagementPanel from '../components/dashboard/PromptManagementPanel.vue';
 import ApiPage from '../views/game/ApiPage.vue';
 import GalleryPage from '../views/game/GalleryPage.vue';
-import AccountPage from '../views/game/AccountPage.vue';
 
 const routes = [
   {
@@ -218,11 +217,6 @@ const routes = [
         path: 'api-management',
         name: 'APIManagement',
         component: ApiPage,
-      },
-      {
-        path: 'account',
-        name: 'GameAccount',
-        component: AccountPage,
       },
     ],
   },

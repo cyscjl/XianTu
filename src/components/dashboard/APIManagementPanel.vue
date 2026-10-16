@@ -37,16 +37,6 @@
 
     <!-- 内容区域 -->
     <div class="settings-container">
-      <!-- 公益 API：签到、一键切换、模型状态、提交渠道、排行榜 -->
-      <div class="settings-section">
-        <div class="section-header">
-          <HandHeart :size="15" class="section-icon" />
-          <h4 class="section-title">公益 API</h4>
-          <span class="section-rule" aria-hidden="true"></span>
-        </div>
-        <PublicApiHall @login="goLogin" />
-      </div>
-
       <!-- API列表区 -->
       <div class="settings-section api-config-section">
         <div class="section-header">
@@ -351,13 +341,6 @@
           <component :is="isTavernEnvFlag ? Beer : Globe" :size="14" />
           <span v-if="isTavernEnvFlag">{{ t('主流程固定走酒馆的 API；下面的辅助功能可单独指定 API，不指定则同样走酒馆。') }}</span>
           <span v-else>{{ t('每个功能都可以指定用哪个 API；指定同一个 API 的功能会合并请求。') }}</span>
-        </p>
-        <p v-if="turnCost.total > 0" class="section-hint credit-hint">
-          <HandHeart :size="14" />
-          <span>
-            用到公益模型的功能每次调用都扣额度：当前每回合约 <b>{{ formatCredit(turnCost.total) }}</b>
-            （{{ turnCost.parts.filter((x) => x.cost).map((x) => `${x.label} ${formatCredit(x.cost)}`).join(' + ') }}）<template v-if="turnCost.turnsLeft !== null">，余额约够 {{ turnCost.turnsLeft }} 回合</template><template v-if="turnCost.memoryCost">；记忆总结触发时另扣 {{ formatCredit(turnCost.memoryCost) }}</template>。
-          </span>
         </p>
 
         <div class="settings-list">
@@ -756,7 +739,6 @@ import {
   Server, Workflow, Bot, Beer, Globe, Lock, Check, HandHeart,
 } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
-import PublicApiHall from '@/components/publicApi/PublicApiHall.vue';
 import { usePublicApi } from '@/composables/usePublicApi';
 import { formatCredit } from '@/services/builtinApi';
 import openaiIcon from '@/assets/provider-icons/openai-green.png';

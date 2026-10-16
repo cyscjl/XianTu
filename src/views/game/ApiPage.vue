@@ -3,13 +3,8 @@
     <div class="a-body">
       <PageTabs :model-value="tab" :tabs="tabs" label="API 管理分类" @update:model-value="onTab" />
 
-      <!-- 公益 API：签到、一键切换、模型状态、提交渠道、排行榜 -->
-      <div v-if="tab === 'public'" class="public-wrap">
-        <PublicApiHall :loginable="false" />
-      </div>
-
       <!-- API 配置 -->
-      <ListDetail v-else-if="tab === 'apis'" class="a-main" :open="!!selected && detailOpen" :detail-width="420" detail-label="API 详情" @close="detailOpen = false">
+      <ListDetail v-if="tab === 'apis'" class="a-main" :open="!!selected && detailOpen" :detail-width="420" detail-label="API 详情" @close="detailOpen = false">
         <template #list>
           <ul class="gm-list api-list">
             <li v-for="api in ownApis" :key="api.id">
@@ -122,9 +117,6 @@
                 <optgroup v-if="ownChatOthers.length" label="我的 API">
                   <option v-for="api in ownChatOthers" :key="api.id" :value="api.id" :disabled="!api.enabled">{{ m.displayName(api) }}{{ api.enabled ? '' : '（未启用）' }}</option>
                 </optgroup>
-                <optgroup v-if="publicApis.length" label="公益模型">
-                  <option v-for="api in publicApis" :key="api.id" :value="api.id">{{ publicLabel(api) }}</option>
-                </optgroup>
               </select>
             </div>
             <div class="gm-form-row nested">
@@ -176,9 +168,6 @@
               <optgroup v-if="ownChatEnabled.length" label="我的 API">
                 <option v-for="api in ownChatEnabled" :key="api.id" :value="api.id">{{ m.displayName(api) }}</option>
               </optgroup>
-              <optgroup v-if="publicApis.length" label="公益模型">
-                <option v-for="api in publicApis" :key="api.id" :value="api.id">{{ publicLabel(api) }}</option>
-              </optgroup>
             </select>
           </div>
 
@@ -201,9 +190,6 @@
                   <option value="default">沿用主流程 API</option>
                   <optgroup v-if="ownChatOthers.length" label="我的 API">
                     <option v-for="api in ownChatOthers" :key="api.id" :value="api.id" :disabled="!api.enabled">{{ m.displayName(api) }}{{ api.enabled ? '' : '（未启用）' }}</option>
-                  </optgroup>
-                  <optgroup v-if="publicApis.length" label="公益模型">
-                    <option v-for="api in publicApis" :key="api.id" :value="api.id">{{ publicLabel(api) }}</option>
                   </optgroup>
                 </select>
                 <select
@@ -272,7 +258,6 @@
               </span>
             </li>
           </ol>
-          <UsageLog dense :limit="8" />
           <dl class="gm-kv ov-kv">
             <dt>流式输出</dt><dd>{{ m.streaming.value ? '开启' : '关闭' }}</dd>
             <dt>失败重试</dt><dd>{{ m.retry.value }} 次</dd>
@@ -449,8 +434,6 @@ import PageTabs from '@/components/game/PageTabs.vue';
 import ListDetail from '@/components/game/ListDetail.vue';
 import EmptyState from '@/components/game/EmptyState.vue';
 import SealBadge from '@/components/game/SealBadge.vue';
-import PublicApiHall from '@/components/publicApi/PublicApiHall.vue';
-import UsageLog from '@/components/publicApi/UsageLog.vue';
 import { usePublicApi } from '@/composables/usePublicApi';
 import { formatCredit } from '@/services/builtinApi';
 import { enableStoryImage, resolveImageApi } from '@/services/storyImageRunner';
@@ -475,30 +458,23 @@ onMounted(() => {
   void pub.refreshWallet();
 });
 
-const tab = ref<'public' | 'apis' | 'gen' | 'assign'>('apis');
+const tab = ref<'apis' | 'gen' | 'assign'>('apis');
 const onTab = (value: string) => {
-  if (value === 'public' || value === 'apis' || value === 'gen' || value === 'assign') tab.value = value;
+  if (value === 'apis' || value === 'gen' || value === 'assign') tab.value = value;
 };
 const tabs = computed(() => [
   { key: 'apis', label: '我的 API', count: ownApis.value.length },
-  { key: 'public', label: '公益 API', count: publicApis.value.length || null },
   { key: 'gen', label: '生成方式' },
   { key: 'assign', label: '功能分配' },
 ]);
 
 const ownApis = computed(() => m.store.apiConfigs.filter((a) => !a.builtin));
-const publicApis = computed(() => m.store.apiConfigs.filter((a) => a.builtin));
 const others = computed(() => ownApis.value.filter((a) => a.id !== 'default'));
 const isChatProvider = (provider?: APIProvider) => !isEmbeddingProvider(provider) && !isImageProvider(provider);
 const channelKind = (provider?: APIProvider) => (isImageProvider(provider) ? '生图渠道' : isEmbeddingProvider(provider) ? '向量模型' : '对话模型');
 const chatEnabled = computed(() => m.store.enabledAPIs.filter((a) => isChatProvider(a.provider)));
 const ownChatEnabled = computed(() => chatEnabled.value.filter((a) => !a.builtin));
 const ownChatOthers = computed(() => others.value.filter((a) => isChatProvider(a.provider)));
-const publicLabel = (api: APIConfig) => {
-  const cost = `${formatCredit(api.cost ?? 1)} 额度/次`;
-  if (!api.model || api.name.includes(api.model)) return `${api.name} · ${cost}`;
-  return `${api.name} · ${api.model} · ${cost}`;
-};
 const embeddingChoices = computed(() => others.value.filter((a) => !a.builtin && EMBEDDING_USABLE.includes(a.provider)));
 const imageChoices = computed(() => others.value.filter((a) => isImageProvider(a.provider)));
 const canSwitchTo = (api: APIConfig) => isChatProvider(api.provider) && !(m.inTavern.value && api.id === 'default');
